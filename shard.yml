@@ -1,0 +1,13 @@
+name: rxcr
+version: 0.1.0
+
+targets:
+  rxcr:
+    main: src/rxcr.cr
+
+authors:
+  - will leach <wleach1992@gmail.com>
+
+crystal: 0.26.1
+
+license: MIT
