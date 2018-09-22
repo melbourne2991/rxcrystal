@@ -1,6 +1,8 @@
 require "./spec_helper"
 
-class MyObserver < Rx::Observer(String)
+include Rx
+
+class MyObserver < Observer(String)
   def next(value)
     puts value
   end
@@ -14,19 +16,17 @@ describe Rx do
   # TODO: Write tests
 
   it "works" do
-    observable = Rx::Observable.new(->(subscriber : Rx::Observer(String)) {
+    observable = Observable.new(->(subscriber : Observer(String)) {
       subscriber.next("Meh")
       subscriber.next("Mo!")
       subscriber.complete
     })
 
-    mapper = Rx::MapOperator.new(->(val : String) {
+    mapper = MapOperator(String).new { |val|
       "#{val} mapped"
-    })
+    }
 
-    otherMapper = Rx::MapOperator.new(->(val : String) {
-      "#{val} again"
-    })
+    otherMapper = MapOperator(String).new { |val| "#{val} again" }
 
     observable
       .pipe(mapper)

@@ -35,7 +35,7 @@ module Rx
       end
     end
 
-    def initialize(mapper : Proc(T, T))
+    def initialize(&mapper : Proc(T, T))
       @mapper = mapper
     end
 
