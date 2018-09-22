@@ -13,13 +13,14 @@ class MyObserver < Observer(String)
 end
 
 describe Rx do
-  # TODO: Write tests
-
   it "works" do
     observable = Observable(String).new { |subscriber|
-      subscriber.next("Meh")
-      subscriber.next("Mo!")
-      subscriber.complete
+      spawn do
+        loop do
+          subscriber.next("Meh")
+          sleep 1.second
+        end
+      end
     }
 
     mapper = MapOperator(String).new { |val|
@@ -35,5 +36,9 @@ describe Rx do
       .pipe(mapper)
       .pipe(otherMapper)
       .subscribe(MyObserver.new)
+
+    puts "wow!"
+
+    sleep
   end
 end

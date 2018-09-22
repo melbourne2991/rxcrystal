@@ -1,51 +1,4 @@
 module Rx
-  class Observer(T)
-    def next(value : T)
-    end
-
-    def complete
-    end
-
-    def error
-    end
-  end
-
-  class Operator(T)
-    def apply(source : Observable(T)) : Observable(T)
-    end
-  end
-
-  class MapOperator(T) < Operator(T)
-    class MapObserver(T) < Observer(T)
-      def initialize(subscriber : Observer(T), mapper : Proc(T, T))
-        @subscriber = subscriber
-        @mapper = mapper
-      end
-
-      def next(value : T)
-        @subscriber.next(@mapper.call(value))
-      end
-
-      def complete
-        @subscriber.complete
-      end
-
-      def error
-        @subscriber.error
-      end
-    end
-
-    def initialize(&mapper : Proc(T, T))
-      @mapper = mapper
-    end
-
-    def apply(source : Observable(T))
-      Observable(T).new { |subscriber|
-        source.subscribe(MapObserver.new(subscriber, @mapper))
-      }
-    end
-  end
-
   class Observable(T)
     def initialize(&onSubscribe : Proc(Observer(T), Nil))
       @onSubscribe = onSubscribe
@@ -59,8 +12,23 @@ module Rx
       operator.apply(self)
     end
 
-    def subscribe(observer : Observer)
+    def subscribe(observer : Observer(T))
       @onSubscribe.call(observer)
+    end
+  end
+
+  class Interval < Observable(Nil)
+    def initialize(intervalTime : Int32)
+      @onSubscribe = ->(subscriber : Observer(Nil)) {
+        spawn do
+          loop do
+            sleep intervalTime.second
+            subscriber.next(nil)
+          end
+        end
+
+        nil
+      }
     end
   end
 end

@@ -1,4 +1,5 @@
 require "./rxcr/*"
+require "./rxcr/operators/*"
 
 # TODO: Write documentation for `Rxcr`
 module Rx
