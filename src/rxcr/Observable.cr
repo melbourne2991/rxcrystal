@@ -40,15 +40,19 @@ module Rx
     end
 
     def apply(source : Observable(T))
-      Observable.new(->(subscriber : Observer(T)) {
+      Observable(T).new { |subscriber|
         source.subscribe(MapObserver.new(subscriber, @mapper))
-      })
+      }
     end
   end
 
   class Observable(T)
-    def initialize(onSubscribe : Proc(Observer(T), Nil))
+    def initialize(&onSubscribe : Proc(Observer(T), Nil))
       @onSubscribe = onSubscribe
+    end
+
+    def map(&mapper : Proc(T, T))
+      MapOperator(T).new(&mapper).apply self
     end
 
     def pipe(operator : Operator(T))
